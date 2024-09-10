@@ -10,6 +10,8 @@ export interface SolanaAccountTransactions extends Document {
 }
 
 const SolanaAccountTransactionsSchema: Schema = new Schema({
+	user: { type: String, ref: "User", index: true },
+	account: { type: String, ref: "Account", index: true },
 	blockTime: {
 		type: Number,
 		required: true,

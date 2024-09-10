@@ -37,7 +37,10 @@ export const getAccountTransactions = async (walletAddress: string) => {
 export const getTransactionDetails = async (txHash: string | string[]) => {
 	const transactionHashes = typeof txHash === "string" ? [txHash] : txHash;
 
-	if (transactionHashes.length === 0 || transactionHashes.length > 50)
+	if (transactionHashes.length === 0)
+		throw new Error("transaction hashes not supplied");
+
+	if (transactionHashes.length > 50)
 		throw new Error("transaction hashes supplied exceeds 50");
 
 	try {

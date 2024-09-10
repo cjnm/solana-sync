@@ -129,6 +129,8 @@ const ItemSchema: Schema = new Schema({
 
 // Define the schema for the main document
 const SolanaWalletTokenBalanceSchema: Schema = new Schema({
+	user: { type: String, ref: "User", index: true },
+	account: { type: String, ref: "Account", index: true },
 	address: {
 		type: String,
 		required: true,
