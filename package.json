@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm i && del-cli dist && tsc"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,7 @@
     "node-cron": "^3.0.3"
   },
   "devDependencies": {
+    "del-cli": "^5.0.0",
     "@biomejs/biome": "1.8.3",
     "@types/express": "^4.17.21",
     "@types/node": "^22.5.1",

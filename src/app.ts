@@ -3,10 +3,10 @@
 // 	getAccountTransactions,
 // 	getTransactionDetails,
 // } from "./controllers/Solana";
-import { initMongoose } from "./config/mongoose";
-import { saveTokenBalances, saveWalletTransactions } from "./jobs/solana";
+// import { initMongoose } from "./config/mongoose";
+// import { saveTokenBalances, saveWalletTransactions } from "./jobs/solana";
 
-initMongoose();
+// initMongoose();
 // const solanaWalletAddress = "5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1";
 
 // // save soalan token balances
@@ -37,4 +37,4 @@ initMongoose();
 
 // saveWalletTransactions();
 
-saveWalletTransactions();
+// saveWalletTransactions();
