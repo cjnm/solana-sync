@@ -141,7 +141,6 @@ const saveWalletTransactions = async (
         filter: { tx_hash: transaction.transactionHash },
         update: {
           $set: {
-            ...transaction,
             user,
             account: solanaWalletAddress,
             chain: "solana",
