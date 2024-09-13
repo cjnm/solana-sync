@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
     name: "solana-sync",
-    script: "./src/index.js"
+    script: "./dist/index.js"
   }]
 }
