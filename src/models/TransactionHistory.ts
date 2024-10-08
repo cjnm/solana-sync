@@ -3,7 +3,7 @@ import { Schema, model, type InferSchemaType } from "mongoose";
 const transactionHistorySchema = new Schema(
   {
     account: { index: true, type: String },
-    standard: { type: String, default: "erc20" },
+    standard: { type: String, default: "erc20" }, //spl -> solana, erc20 -> other
     cate_id: Schema.Types.String,
     chain: Schema.Types.String,
     chain_logo: Schema.Types.String,

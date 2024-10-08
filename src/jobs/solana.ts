@@ -9,6 +9,8 @@ import { SolanaTransactionDetailsModel } from "../models/SolanaTransactionDetail
 import { AccountTotalBalance } from "../models/AccountTotalBalance";
 import { Account } from "../models/Account";
 import { TransactionHistory } from "../models/TransactionHistory";
+import { Chain } from "../models/Chains";
+import { Token } from "../models/Token";
 
 type transaction = {
   blockTime: number;
@@ -45,6 +47,50 @@ const saveTokenBalances = async (solanaWalletAddress: string, user: string) => {
   );
   console.log("token balance saved");
 
+  // Save tokens - backward compactable
+  await Promise.all(
+    tokenBalance.data.items.map((item) => {
+      return Token.findOneAndUpdate(
+        { account: address },
+        {
+          user,
+          account: address,
+          token_id: item.contract_address,
+          chain: "solana-mainnet",
+          name:
+            item.contract_name ||
+            item.contract_display_name ||
+            item.contract_address,
+          symbol:
+            item.contract_name ||
+            item.contract_display_name ||
+            item.contract_address,
+          display_symbol:
+            item.contract_name ||
+            item.contract_display_name ||
+            item.contract_address,
+          optimized_symbol:
+            item.contract_name ||
+            item.contract_display_name ||
+            item.contract_address,
+          decimals: item.contract_decimals,
+          logo_url: item.logo_url || item.logo_urls.token_logo_url,
+          is_verified: !item.is_spam,
+          price: item.quote_rate,
+          standard: "spl",
+          time_at: 0,
+          amount: Number(item.balance || 0),
+          raw_amount: Number(item.balance || 0),
+          total_usd_price: item.quote,
+          sync_time: 1,
+        },
+        {
+          upsert: true,
+        }
+      );
+    })
+  ).catch((err) => console.log("Error Saving Solana Token", err));
+
   // saving aggregate balance
   const total_balance = tokenBalance.data.items.reduce((total, datum) => {
     return total + datum.quote;
@@ -56,6 +102,26 @@ const saveTokenBalances = async (solanaWalletAddress: string, user: string) => {
     {
       upsert: true,
     }
+  );
+
+  // save Solana chain details
+  const chainData = {
+    id: "solana-mainnet",
+    name: "Solana",
+    logo_url:
+      "https://www.datocms-assets.com/86369/1670614895-solana-icon-white.svg",
+    timestamp: new Date(),
+    usd_value: total_balance,
+    native_token_id: "solana-mainnet",
+    standard: "spl", //spl -> solana, erc20 -> other
+    metadata: {
+      user,
+      community_id: 1399811149,
+      wallet_address: address,
+    },
+  };
+  await Chain.insertMany([chainData]).catch((err) =>
+    console.log("error saving solana chain details", err)
   );
 };
 
@@ -71,11 +137,12 @@ const saveWalletTransactions = async (
 
   const transactions = await getAccountTransactions(solanaWalletAddress).catch(
     (error) => {
-      throw new Error(error);
+      throw new Error(`Error getting transaction: ${error}`);
     }
   );
 
-  if (transactions.status !== "success") throw new Error(transactions.message);
+  if (transactions.status !== "success")
+    throw new Error(`transaction error ${transactions.message}`);
 
   // Prepare bulk operations
   const bulkOps = transactions.result.data.map((transaction: any) => ({
@@ -105,12 +172,12 @@ const saveWalletTransactions = async (
 
     const transactionDetails = await getTransactionDetails(chunk).catch(
       (error) => {
-        throw new Error(error);
+        throw new Error(`Error getting transaction details ${error}`);
       }
     );
 
     if (transactionDetails.status !== "success")
-      throw new Error(transactionDetails.message);
+      throw new Error(`Transaction detail error ${transactionDetails.message}`);
 
     // Prepare bulk operations
     const _bulkOps = transactionDetails.result.map((transaction: any) => ({
@@ -147,7 +214,7 @@ const saveWalletTransactions = async (
             chain_name: "Solana",
             chain_logo:
               "https://www.datocms-assets.com/86369/1670614895-solana-icon-white.svg",
-            standard: "spl",
+            standard: "spl", //spl -> solana, erc20 -> other
             time_at: transaction?.data[0]?.timestamp || "",
             tx_hash: transaction.transactionHash,
             account_id: accounts._id,

@@ -2,7 +2,7 @@ import { Chain } from "../models/Chains";
 import { getUserChainsBalance } from "../controllers/Debank";
 // import { data } from "../../data";
 
-const saveUserChainsBalance = async (wallet_address: string) => {
+const saveUserChainsBalance = async (wallet_address: string, user: string) => {
   const userChainsBalances = await getUserChainsBalance(wallet_address);
   // const userChainsBalances = data;
   if (!userChainsBalances) return;
@@ -31,14 +31,17 @@ const saveUserChainsBalance = async (wallet_address: string) => {
           usd_value,
           native_token_id,
           wrapped_token_id,
+          standard: "erc20",
           metadata: {
+            user,
             community_id,
             wallet_address,
           },
         };
       });
 
-      await Chain.insertMany(chainData);
+      console.log({ chainData });
+      await Chain.insertMany(chainData).catch((err) => console.log(err));
       console.log("Data successfully inserted into time series collection.");
     } catch (error) {
       console.error("Error inserting data:", error);
