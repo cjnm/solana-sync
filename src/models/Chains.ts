@@ -4,7 +4,7 @@ const chainsSchema = new Schema(
   {
     id: { type: String, required: true },
     name: { type: String, required: true },
-    standard: { type: String, default: "erc20" },
+    standard: { type: String, default: "erc20" }, //spl -> solana, erc20 -> other
     timestamp: { type: Date, default: new Date() },
     native_token_id: { type: String, required: true },
     born_at: Number,
@@ -16,7 +16,7 @@ const chainsSchema = new Schema(
     metadata: {
       community_id: { type: Number, required: true },
       wallet_address: String,
-      // user: { type: String, ref: "User", index: true },
+      user: { type: String, ref: "User", index: true },
     },
   },
   {
